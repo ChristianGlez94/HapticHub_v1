@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     EditText intensidad, tiempo, actuadores, retardo;
 
+    ImageView logo;
+
 
 
     @Override
@@ -31,6 +35,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+       logo=findViewById(R.id.imageView);
+
+       logo.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+               String url = "https://sites.google.com/cicese.edu.mx/veritasresearchlab/vision?authuser=0"; // Reemplaza con la URL que desees abrir.
+               Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+               startActivity(intent);
+
+           }
+       });
 
         superficie=findViewById(R.id.superficies);
         inicio=findViewById(R.id.iniciar);
@@ -87,6 +103,12 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     // El Switch está desactivado.
                     // Ejecuta la acción correspondiente aquí.
+
+
+                    SharedPreferences sharedPreferences = getSharedPreferences("MiPreferencia", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.clear();
+                    editor.apply();
                     title1.setVisibility(View.INVISIBLE);
                     title2.setVisibility(View.INVISIBLE);
                     title3.setVisibility(View.INVISIBLE);
@@ -142,6 +164,11 @@ inicio.setOnClickListener(new View.OnClickListener() {
     @Override
     public void onClick(View view) {
 
+        if(superficie.getText().equals("Solo Vibración")){
+            Intent intent = new Intent(getApplicationContext(), OnlyVibrationActivity.class);
+            startActivity(intent);
+        }
+
         if(superficie.getText().equals("Arena")){
             Intent intent = new Intent(getApplicationContext(), ArenaActivity.class);
             startActivity(intent);
@@ -152,15 +179,11 @@ inicio.setOnClickListener(new View.OnClickListener() {
             startActivity(intent);
         }
 
-        if(superficie.getText().equals("Roca")){
-            Intent intent = new Intent(getApplicationContext(), RocasActivity.class);
+        if(superficie.getText().equals("Mano")){
+            Intent intent = new Intent(getApplicationContext(), HandActivity.class);
             startActivity(intent);
         }
 
-        if(superficie.getText().equals("Mixta")){
-            Intent intent = new Intent(getApplicationContext(), MixtaActivity.class);
-            startActivity(intent);
-        }
     }
 });
 salvar.setOnClickListener(new View.OnClickListener() {

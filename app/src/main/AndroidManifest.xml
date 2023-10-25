@@ -52,10 +52,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".OnlyVibrationActivity" />
         <activity android:name=".ArenaActivity" />
         <activity android:name=".PieneActivity" />
-        <activity android:name=".MixtaActivity" />
-        <activity android:name=".RocasActivity" />
+        <activity android:name=".HandActivity" />
     </application>
 
 </manifest>

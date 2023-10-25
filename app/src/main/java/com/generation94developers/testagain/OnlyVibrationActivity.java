@@ -26,7 +26,7 @@ import com.mbientlab.metawear.module.Haptic;
 import bolts.Continuation;
 import bolts.Task;
 
-public class MixtaActivity extends AppCompatActivity implements ServiceConnection {
+public class OnlyVibrationActivity extends AppCompatActivity implements ServiceConnection {
     private BtleService.LocalBinder serviceBinder;
     private MetaWearBoard[] boards; // Array para los dispositivos
     private Button vibrar,rampaasc;
@@ -34,13 +34,15 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
 
     private ImageView imageView;
     private MediaPlayer mediaPlayer;
-    int inten,time;
+    int inten,time,actua,retar;
+
+    String macs1,macs2,macs3,macs4,macs5,macs6;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mixta);
+        setContentView(R.layout.activity_onlyvibration);
 
         getApplicationContext().bindService(new Intent(this, BtleService.class),
                 this, Context.BIND_AUTO_CREATE);
@@ -51,15 +53,25 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("MiPreferencia", Context.MODE_PRIVATE);
-        String intensidad = sharedPreferences.getString("intensity", "90");
-        String tiempo=sharedPreferences.getString("time", "30");
+        String intensidad = sharedPreferences.getString("intensity", "80");
+        String tiempo=sharedPreferences.getString("time", "60");
+        String actuation=sharedPreferences.getString("actuation","2");
+        String retardate=sharedPreferences.getString("retardate","60");
 
         inten = Integer.parseInt(intensidad);
         time = Integer.parseInt(tiempo);
+        actua=Integer.parseInt(actuation);
+        retar=Integer.parseInt(retardate);
 
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.sonido);
-        mediaPlayer.setLooping(true); // Configurar el MediaPlayer para reproducir en bucle.
+        SharedPreferences shared2Preferences = getSharedPreferences("MisMacs", Context.MODE_PRIVATE);
+        macs1 = shared2Preferences.getString("mac1", "EF:4C:14:4E:18:15");
+        macs2 = shared2Preferences.getString("mac2", "CB:03:47:C3:03:D9");
+        macs3 = shared2Preferences.getString("mac3", "C9:64:8B:2B:EB:13");
+        macs4 = shared2Preferences.getString("mac4", "D7:B6:29:F1:EE:B3");
+        macs5 = shared2Preferences.getString("mac5", "C8:41:5F:6F:E7:0C");
+        macs6 = shared2Preferences.getString("mac6", "FE:25:7D:8E:53:E2");
+
 
         // Agregar un detector de eventos táctiles a la vista principal
         mainView.setOnTouchListener(new View.OnTouchListener() {
@@ -68,12 +80,13 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
                 switch (event.getAction()) {
 
                     case  MotionEvent.ACTION_DOWN:
-
+                        // Ejecutar la secuencia de vibración cuando hay movimiento
+                        startPulsePattern();
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        // Ejecutar la secuencia de vibración cuando hay movimiento
                         startPulsePattern();
+
                         break;
                     case MotionEvent.ACTION_UP:
                         stopVibrationSequence();
@@ -96,11 +109,6 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
         super.onDestroy();
         getApplicationContext().unbindService(this);
 
-        // Liberar recursos del MediaPlayer al destruir la actividad.
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
 
     }
 
@@ -109,11 +117,60 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
         serviceBinder = (BtleService.LocalBinder) service;
         Log.i("Test", "Correct Connection");
 
-        // Reemplazar las direcciones MAC con las de tus dispositivos
-        boards = new MetaWearBoard[2]; // Cambia el tamaño según la cantidad de dispositivos
-       // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
-       retrieveBoard("EF:4C:14:4E:18:15", 1); // Segundo dispositivo
-       retrieveBoard("CB:03:47:C3:03:D9", 0); // Tercer dispositivo
+        if(actua==1){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[1]; // Cambia el tamaño según la cantidad de dispositivos
+            // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
+            retrieveBoard(macs1, 0); // Segundo dispositivo
+            //retrieveBoard("CB:03:47:C3:03:D9", 0); // Tercer dispositivo
+        }
+
+        if(actua==2){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[2]; // Cambia el tamaño según la cantidad de dispositivos
+            // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
+            retrieveBoard(macs1, 0); // Segundo dispositivo
+            retrieveBoard(macs2,1 ); // Tercer dispositivo
+        }
+
+        if(actua==3){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[3]; // Cambia el tamaño según la cantidad de dispositivos
+            retrieveBoard(macs1, 0); // Primer dispositivo
+            retrieveBoard(macs2, 1); // Segundo dispositivo
+            retrieveBoard(macs3, 2); // Tercer dispositivo
+        }
+
+        if(actua==4){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[4]; // Cambia el tamaño según la cantidad de dispositivos
+            retrieveBoard(macs1, 0); // Primer dispositivo
+            retrieveBoard(macs2, 1); // Segundo dispositivo
+            retrieveBoard(macs3, 2); // Tercer dispositivo
+            retrieveBoard(macs4, 3); // Cuarto dispositivo
+        }
+
+        if(actua==5){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[5]; // Cambia el tamaño según la cantidad de dispositivos
+            retrieveBoard(macs1, 0); // Primer dispositivo
+            retrieveBoard(macs2, 1); // Segundo dispositivo
+            retrieveBoard(macs3, 2); // Tercer dispositivo
+            retrieveBoard(macs4, 3); // Cuarto dispositivo
+            retrieveBoard(macs5, 4); // Quinto dispositivo
+        }
+
+        if(actua==6){
+            // Reemplazar las direcciones MAC con las de tus dispositivos
+            boards = new MetaWearBoard[6]; // Cambia el tamaño según la cantidad de dispositivos
+            retrieveBoard(macs1, 0); // Primer dispositivo
+            retrieveBoard(macs2, 1); // Segundo dispositivo
+            retrieveBoard(macs3, 2); // Tercer dispositivo
+            retrieveBoard(macs4, 3); // Cuarto dispositivo
+            retrieveBoard(macs5, 4); // Quinto dispositivo
+            retrieveBoard(macs6, 5); // Sexto dispositivo
+        }
+
     }
 
     @Override
@@ -156,8 +213,8 @@ public class MixtaActivity extends AppCompatActivity implements ServiceConnectio
                     public void run() {
                         try {
                             synchronized (lock) {
-                                hapticModule.startMotor(inten, (short) 20);
-                                Thread.sleep(time);
+                                hapticModule.startMotor(inten, (short) time);
+                                Thread.sleep(retar);
                                 Log.i("Info", "Vibración iniciada en el dispositivo " + currentIndex);
                                 lock.wait(); // Esperar la señal de desbloqueo
                             }

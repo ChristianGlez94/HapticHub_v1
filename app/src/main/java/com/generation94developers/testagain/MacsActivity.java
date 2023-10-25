@@ -3,12 +3,15 @@ package com.generation94developers.testagain;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MacsActivity extends AppCompatActivity {
@@ -16,7 +19,7 @@ public class MacsActivity extends AppCompatActivity {
     EditText mac1,mac2,mac3,mac4,mac5,mac6;
 
     Button salvar;
-
+    TextView meta;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +33,21 @@ public class MacsActivity extends AppCompatActivity {
 
 
         salvar=findViewById(R.id.button);
+        meta=findViewById(R.id.textView17);
 
+
+        meta.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                String url = "https://mbientlab.com/metamotions/"; // Reemplaza con la URL que desees abrir.
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+
+
+            }
+        });
 
         SharedPreferences sharedPreferences = getSharedPreferences("MisMacs", Context.MODE_PRIVATE);
         String macs1 = sharedPreferences.getString("mac1", "EF:4C:14:4E:18:15");

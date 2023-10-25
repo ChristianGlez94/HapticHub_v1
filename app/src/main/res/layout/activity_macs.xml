@@ -196,6 +196,30 @@
             android:textAlignment="center"
             android:textColor="@color/design_default_color_error" />
 
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="*Usar mas de 3 dispositivos provoca retrasos en la comunicación mediante bluetooth "
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_error" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Esta aplicación funciona con al menos un Metamotions, para más detalles sobre el dispositivo, dar click aquí"
+            android:textAlignment="center"
+            android:textColor="@color/design_default_color_error" />
+
     </LinearLayout>
 
 </RelativeLayout>

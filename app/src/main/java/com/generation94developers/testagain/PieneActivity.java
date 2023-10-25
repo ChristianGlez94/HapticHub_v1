@@ -129,6 +129,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             //retrieveBoard("CB:03:47:C3:03:D9", 0); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
         if(actua==2){
@@ -137,6 +138,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             retrieveBoard(macs2,1 ); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
         if(actua==3){
@@ -145,6 +147,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs1, 0); // Primer dispositivo
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
         if(actua==4){
@@ -154,6 +157,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
         if(actua==5){
@@ -164,6 +168,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
         if(actua==6){
@@ -175,6 +180,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
             retrieveBoard(macs6, 5); // Sexto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectados los actuadores", Toast.LENGTH_SHORT).show();
         }
 
     }
