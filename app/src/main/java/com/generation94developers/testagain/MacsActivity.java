@@ -36,7 +36,7 @@ public class MacsActivity extends AppCompatActivity {
         mac4=findViewById(R.id.mac4);
         mac5=findViewById(R.id.mac5);
         mac6=findViewById(R.id.mac6);
-        
+
 
         salvar=findViewById(R.id.button);
         meta=findViewById(R.id.textView17);
@@ -108,7 +108,4 @@ public class MacsActivity extends AppCompatActivity {
 
 
     }
-
-
-
 }

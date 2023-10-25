@@ -78,6 +78,11 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
         macs5 = shared2Preferences.getString("mac5", "C8:41:5F:6F:E7:0C");
         macs6 = shared2Preferences.getString("mac6", "FE:25:7D:8E:53:E2");
 
+<<<<<<< HEAD
+=======
+
+        // Agregar un detector de eventos táctiles a la vista principal
+>>>>>>> f6082d7 (Initial commit)
         mainView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

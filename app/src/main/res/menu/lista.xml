@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-<<<<<<< HEAD
-
-
-    <item
-        android:id="@+id/opcion0"
-        android:title="Solo Vibración" />
-
-=======
->>>>>>> 29e0f0e (Initial commit)
     <item
         android:id="@+id/opcion1"
         android:title="Arena" />
@@ -18,15 +9,8 @@
 
     <item
         android:id="@+id/opcion3"
-<<<<<<< HEAD
         android:title="Mano" />
 
-=======
-        android:title="Roca" />
-    <item
-        android:id="@+id/opcion4"
-        android:title="Mixta" />
->>>>>>> 29e0f0e (Initial commit)
 
 
 

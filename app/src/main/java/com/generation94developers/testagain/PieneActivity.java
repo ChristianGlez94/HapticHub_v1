@@ -52,7 +52,7 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
 
         // Obtener la vista principal
         View mainView = findViewById(R.id.fragmentContainerView);
-        
+
         SharedPreferences sharedPreferences = getSharedPreferences("MiPreferencia", Context.MODE_PRIVATE);
         String intensidad = sharedPreferences.getString("intensity", "80");
         String tiempo=sharedPreferences.getString("time", "60");
@@ -125,8 +125,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             //retrieveBoard("CB:03:47:C3:03:D9", 0); // Tercer dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
-
         }
 
         if(actua==2){
@@ -135,8 +133,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             retrieveBoard(macs2,1 ); // Tercer dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
-
         }
 
         if(actua==3){
@@ -145,8 +141,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs1, 0); // Primer dispositivo
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
-
         }
 
         if(actua==4){
@@ -156,8 +150,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
-
         }
 
         if(actua==5){
@@ -168,8 +160,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
-
         }
 
         if(actua==6){
@@ -181,7 +171,6 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
             retrieveBoard(macs6, 5); // Sexto dispositivo
-            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -211,45 +200,84 @@ public class PieneActivity extends AppCompatActivity implements ServiceConnectio
     }
 
     private void startPulsePattern() {
-        if (!isVibrating) {
-            isVibrating = true; // Marcar que la vibración está en progreso
+        final int totalDevices = boards.length;
+        final Object lock = new Object();
+        isVibrating = true; // Iniciar la vibración
 
-            final int totalDevices = boards.length;
-            final Object lock = new Object();
+        for (int i = 0; i < totalDevices; i++) {
+            final int currentIndex = i;
+            final MetaWearBoard currentBoard = boards[currentIndex];
+            final Haptic hapticModule = currentBoard.getModule(Haptic.class);
 
-            for (int i = 0; i < totalDevices; i++) {
-                final int currentIndex = i;
-                final MetaWearBoard currentBoard = boards[currentIndex];
-                final Haptic hapticModule = currentBoard.getModule(Haptic.class);
-
-                if (hapticModule != null) {
-                    Thread vibrationThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                synchronized (lock) {
-                                    while (isVibrating) {
-                                        hapticModule.startMotor(inten, (short) time);
-                                        Thread.sleep(retar);
-                                    }
-                                    lock.wait(); // Esperar la señal de desbloqueo
-                                }
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+            if (hapticModule != null) {
+                Thread vibrationThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            synchronized (lock) {
+                                hapticModule.startMotor(inten, (short) time);
+                                Thread.sleep(retar);
+                                Log.i("Info", "Vibración iniciada en el dispositivo " + currentIndex);
+                                lock.wait(); // Esperar la señal de desbloqueo
                             }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    });
+                    }
+                });
 
-                    vibrationThread.start();
-                } else {
-                    Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
-                }
+                vibrationThread.start();
+            } else {
+                Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
             }
+        }
+
+        // Desbloquear todos los hilos simultáneamente
+        synchronized (lock) {
+            lock.notifyAll();
+
+
         }
     }
 
     private void stopVibrationSequence() {
-        isVibrating = false; // Marcar que la vibración ha terminado
+        final int totalDevices = boards.length;
+        final Object lock = new Object();
+        isVibrating = true; // Iniciar la vibración
+
+        for (int i = 0; i < totalDevices; i++) {
+            final int currentIndex = i;
+            final MetaWearBoard currentBoard = boards[currentIndex];
+            final Haptic hapticModule = currentBoard.getModule(Haptic.class);
+
+            if (hapticModule != null) {
+                Thread vibrationThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            synchronized (lock) {
+                                hapticModule.startMotor(0, (short) 0);
+                                Log.i("Info", "Vibración iniciada en el dispositivo " + currentIndex);
+                                lock.wait(); // Esperar la señal de desbloqueo
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                vibrationThread.start();
+            } else {
+                Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
+            }
+        }
+
+        // Desbloquear todos los hilos simultáneamente
+        synchronized (lock) {
+            lock.notifyAll();
+
+
+        }
     }
 
 }
