@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="VibraMetrics"
+            android:text="Haptic Hub"
             android:textSize="34sp"
             android:textStyle="bold" />
 
@@ -141,7 +141,7 @@
                 android:layout_weight="1"
                 android:ems="3"
                 android:gravity="center"
-                android:hint="0-100"
+                android:hint="0-100 %"
                 android:inputType="number"
                 android:visibility="visible"
                 tools:visibility="visible" />
@@ -202,9 +202,58 @@
 
         </LinearLayout>
 
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radioButton4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="Liso"
+                android:textColorLink="@color/design_default_color_error"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bachoso"
+                android:textColorLink="@color/design_default_color_error"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radioButton3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rugoso"
+                android:textColorLink="@color/design_default_color_error"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radioButton5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filoso"
+                android:textColorLink="@color/design_default_color_error"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adhesivo"
+                android:textColorLink="@color/design_default_color_error"
+                android:textSize="12sp" />
+
+        </RadioGroup>
+
         <Space
             android:layout_width="match_parent"
-            android:layout_height="15dp" />
+            android:layout_height="5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

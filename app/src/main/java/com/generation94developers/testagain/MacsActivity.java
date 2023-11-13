@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,17 +22,21 @@ public class MacsActivity extends AppCompatActivity {
 
     Button salvar;
     TextView meta;
+
+    CheckBox macBox1,macBox2,macBox3,macBox4,macBox5,macBox6;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_macs);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         mac1=findViewById(R.id.mac1);
         mac2=findViewById(R.id.mac2);
         mac3=findViewById(R.id.mac3);
         mac4=findViewById(R.id.mac4);
         mac5=findViewById(R.id.mac5);
         mac6=findViewById(R.id.mac6);
-
+        
 
         salvar=findViewById(R.id.button);
         meta=findViewById(R.id.textView17);
@@ -102,4 +108,7 @@ public class MacsActivity extends AppCompatActivity {
 
 
     }
+
+
+
 }

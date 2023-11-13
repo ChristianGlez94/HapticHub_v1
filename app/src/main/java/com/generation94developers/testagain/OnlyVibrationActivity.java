@@ -7,9 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,18 +33,22 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
     private MetaWearBoard[] boards; // Array para los dispositivos
     private Button vibrar,rampaasc;
     private volatile boolean isVibrating = false;
+    private boolean isFingerDown = false; // Variable para rastrear el estado del dedo
 
     private ImageView imageView;
     private MediaPlayer mediaPlayer;
     int inten,time,actua,retar;
 
     String macs1,macs2,macs3,macs4,macs5,macs6;
+    private PowerManager.WakeLock wakeLock;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onlyvibration);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 
         getApplicationContext().bindService(new Intent(this, BtleService.class),
                 this, Context.BIND_AUTO_CREATE);
@@ -72,21 +78,13 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
         macs5 = shared2Preferences.getString("mac5", "C8:41:5F:6F:E7:0C");
         macs6 = shared2Preferences.getString("mac6", "FE:25:7D:8E:53:E2");
 
-
-        // Agregar un detector de eventos táctiles a la vista principal
         mainView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
-
-                    case  MotionEvent.ACTION_DOWN:
-                        // Ejecutar la secuencia de vibración cuando hay movimiento
-                        startPulsePattern();
-                        break;
-
+                    case MotionEvent.ACTION_DOWN:
                     case MotionEvent.ACTION_MOVE:
                         startPulsePattern();
-
                         break;
                     case MotionEvent.ACTION_UP:
                         stopVibrationSequence();
@@ -123,6 +121,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             //retrieveBoard("CB:03:47:C3:03:D9", 0); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
         if(actua==2){
@@ -131,6 +130,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             // retrieveBoard("C9:64:8B:2B:EB:13", 0); // Primer dispositivo
             retrieveBoard(macs1, 0); // Segundo dispositivo
             retrieveBoard(macs2,1 ); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
         if(actua==3){
@@ -139,6 +139,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             retrieveBoard(macs1, 0); // Primer dispositivo
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
         if(actua==4){
@@ -148,6 +149,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             retrieveBoard(macs2, 1); // Segundo dispositivo
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
         if(actua==5){
@@ -158,6 +160,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             retrieveBoard(macs3, 2); // Tercer dispositivo
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
         if(actua==6){
@@ -169,6 +172,7 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
             retrieveBoard(macs4, 3); // Cuarto dispositivo
             retrieveBoard(macs5, 4); // Quinto dispositivo
             retrieveBoard(macs6, 5); // Sexto dispositivo
+            Toast.makeText(getApplicationContext(), "Conectando los actuadores", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -198,87 +202,73 @@ public class OnlyVibrationActivity extends AppCompatActivity implements ServiceC
     }
 
     private void startPulsePattern() {
-        final int totalDevices = boards.length;
-        final Object lock = new Object();
-        isVibrating = true; // Iniciar la vibración
+        if (!isVibrating) {
+            isVibrating = true; // Marcar que la vibración está en progreso
 
-        for (int i = 0; i < totalDevices; i++) {
-            final int currentIndex = i;
-            final MetaWearBoard currentBoard = boards[currentIndex];
-            final Haptic hapticModule = currentBoard.getModule(Haptic.class);
+            final int totalDevices = boards.length;
+            final Object lock = new Object();
 
-            if (hapticModule != null) {
-                Thread vibrationThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            synchronized (lock) {
-                                hapticModule.startMotor(inten, (short) time);
-                                Thread.sleep(retar);
-                                Log.i("Info", "Vibración iniciada en el dispositivo " + currentIndex);
-                                lock.wait(); // Esperar la señal de desbloqueo
+            for (int i = 0; i < totalDevices; i++) {
+                final int currentIndex = i;
+                final MetaWearBoard currentBoard = boards[currentIndex];
+                final Haptic hapticModule = currentBoard.getModule(Haptic.class);
+
+                if (hapticModule != null) {
+                    Thread vibrationThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                synchronized (lock) {
+                                    while (isVibrating) {
+                                        hapticModule.startMotor(inten, (short) time);
+                                        Thread.sleep(retar);
+                                    }
+                                    lock.wait(); // Esperar la señal de desbloqueo
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
                             }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
                         }
-                    }
-                });
+                    });
 
-                vibrationThread.start();
-            } else {
-                Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
+                    vibrationThread.start();
+                } else {
+                    Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
+                }
             }
         }
 
-        // Desbloquear todos los hilos simultáneamente
-        synchronized (lock) {
-            lock.notifyAll();
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(
+                PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "TuApp:WakeLockTag"
+        );
 
-
-        }
     }
 
     private void stopVibrationSequence() {
-        final int totalDevices = boards.length;
-        final Object lock = new Object();
-        isVibrating = true; // Iniciar la vibración
+        isVibrating = false; // Marcar que la vibración ha terminado
+    }
 
-        for (int i = 0; i < totalDevices; i++) {
-            final int currentIndex = i;
-            final MetaWearBoard currentBoard = boards[currentIndex];
-            final Haptic hapticModule = currentBoard.getModule(Haptic.class);
-
-            if (hapticModule != null) {
-                Thread vibrationThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            synchronized (lock) {
-                                hapticModule.startMotor(0, (short) 0);
-                                Log.i("Info", "Vibración iniciada en el dispositivo " + currentIndex);
-                                lock.wait(); // Esperar la señal de desbloqueo
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
-                vibrationThread.start();
-            } else {
-                Log.e("Error", "El módulo Haptic no se ha inicializado correctamente en el dispositivo " + currentIndex);
-            }
+    protected void onResume() {
+        super.onResume();
+        // Adquirir el WakeLock al volver a la actividad
+        if (wakeLock != null) {
+            wakeLock.acquire();
         }
+    }
 
-        // Desbloquear todos los hilos simultáneamente
-        synchronized (lock) {
-            lock.notifyAll();
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Liberar el WakeLock al pausar la actividad
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
         }
     }
 
 }
+
 
 
 
